@@ -20,28 +20,23 @@ local app2Ime = {
     -- 在这里填写应用路径和对应的输入法
 }
 
-function updateFocusAppInputMethod()
+function updateFocusAppInputMethod(appObject)
     local ime = 'English'
-    local front = hs.window.frontmostWindow()
-    if front then
-        local focusAppPath = hs.window.frontmostWindow():application():path()
-        for index, app in pairs(app2Ime) do
-            local appPath = app[1]
-            local expectedIme = app[2]
+    local focusAppPath = appObject:path() 
+    for index, app in pairs(app2Ime) do
+        local appPath = app[1]
+        local expectedIme = app[2]
 
-            if focusAppPath == appPath then
-                ime = expectedIme
-                break
-            end
+        if focusAppPath == appPath then
+            ime = expectedIme
+            break
         end
+    end
 
-        if ime == 'English' then
-            English()
-        else
-            Chinese()
-        end
+    if ime == 'English' then
+        English()
     else
-        hs.timer.doAfter(1,updateFocusAppInputMethod)
+        Chinese()
     end
 end
 
@@ -64,8 +59,8 @@ end)
 -- Handle cursor focus and application's screen manage.
 -- 窗口激活时自动切换输入法
 function applicationWatcher(appName, eventType, appObject)
-    if eventType == hs.application.watcher.activated or eventType == hs.application.watcher.launched then
-        updateFocusAppInputMethod()
+    if eventType == hs.application.watcher.activated then
+        updateFocusAppInputMethod(appObject)
     end
 end
 
